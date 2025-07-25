@@ -14,10 +14,10 @@ plane_velocity = np.zeros((plane_size, plane_size))
 plane_acceleration = np.zeros((plane_size, plane_size))
 
 # Parametri di simulazione
-elasticity = 0.3  # Coefficiente di elasticità
-damping = 0.5    # Coefficiente di smorzamento
+elasticity = 0.3 # Coefficiente di elasticità
+damping = 0.7    # Coefficiente di smorzamento
 delta_time = 1.0  # Passo di tempo per la simulazione
-force = 3.0      # Forza applicata al clic del mouse
+force = 1.0      # Forza applicata al clic del mouse
 
 # Controlli della telecamera
 class Camera:
@@ -41,7 +41,7 @@ class Camera:
 camera = Camera()
 
 mouse_dragging = False
-mouse_weight_active = False  # Nuova variabile per il peso persistente
+mouse_weight_active = False
 
 def get_hex_offset(x):
     """Restituisce l'offset per la griglia esagonale."""
@@ -80,16 +80,11 @@ def apply_force_at_cursor(window):
     x, y = glfw.get_cursor_pos(window)
     grid_x = int(plane_size * (x / window_size[0]))
     grid_y = int(plane_size * (1 - y / window_size[1]))
-    # Applica forza negativa per spingere in basso
     for dx in range(-1, 2):
         for dy in range(-1, 2):
             gx, gy = grid_x + dx, grid_y + dy
             if 0 <= gx < plane_size and 0 <= gy < plane_size:
                 plane_height[gx, gy] -= force
-
-def scroll_callback(window, xoffset, yoffset):
-    global camera
-    camera.zoom += yoffset * 2
 
 def setup_lighting_and_color():
     glEnable(GL_LIGHTING)
@@ -158,7 +153,6 @@ def main():
     fullscreen_size = (mode.size.width, mode.size.height)
 
     # Imposta la finestra come non decorata (senza bordi)
-    glfw.window_hint(glfw.DECORATED, glfw.FALSE)
     window = glfw.create_window(fullscreen_size[0], fullscreen_size[1], "Griglia 3D Fisica", None, None)
     if not window:
         glfw.terminate()
@@ -171,7 +165,6 @@ def main():
     glfw.make_context_current(window)
     glfw.set_mouse_button_callback(window, mouse_button_callback)
     glfw.set_cursor_pos_callback(window, cursor_position_callback)
-    glfw.set_scroll_callback(window, scroll_callback)
     glEnable(GL_DEPTH_TEST)
 
     imgui.create_context()
@@ -222,4 +215,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-
+    cleanup()
+    glfw.terminate()
