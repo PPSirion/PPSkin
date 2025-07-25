@@ -1,3 +1,3 @@
 # PPSkin
 
-![Presentazione](screenshot.png)
+![ppskin](pic.png)
