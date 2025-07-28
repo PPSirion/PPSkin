@@ -17,7 +17,7 @@ plane_acceleration = np.zeros((plane_size, plane_size))
 elasticity = 0.3 # Coefficiente di elasticità
 damping = 0.7    # Coefficiente di smorzamento
 delta_time = 1.0  # Passo di tempo per la simulazione
-force = 1.0      # Forza applicata al clic del mouse
+force = 3.0      # Forza applicata al clic del mouse
 
 # Controlli della telecamera
 class Camera:
@@ -95,14 +95,14 @@ def setup_lighting_and_color():
     glPointSize(3)
 
 def get_color(z):
-    # Colore bianco in posizione neutra, saturazione aumenta con |z|
-    # Normalizza z tra -1 e +1 per maggiore sensibilità cromatica
-    z_norm = max(-1.0, min(1.0, z))
-    # Hue varia da blu (negativo) a rosso (positivo), centro bianco
+    # Colore stabile per ogni altezza: mappa lineare da blu (basso) a rosso (alto)
+    max_abs = 2.0  # imposta la gamma di altezze attesa
+    z_norm = max(-max_abs, min(max_abs, z))
     if abs(z_norm) < 0.01:
         return (1.0, 1.0, 1.0)
-    h = 0.6 if z_norm < 0 else 0.0  # 0.6=blu, 0.0=rosso
-    s = min(1.0, abs(z_norm))       # saturazione cresce con |z|
+    # Hue da 0.6 (blu) a 0.0 (rosso)
+    h = 0.6 - 0.6 * ((z_norm + max_abs) / (2 * max_abs))
+    s = min(1.0, abs(z_norm) / max_abs)
     v = 1.0
     r, g, b = colorsys.hsv_to_rgb(h, s, v)
     return (r, g, b)
